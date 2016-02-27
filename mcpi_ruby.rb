@@ -1,5 +1,4 @@
 require 'minecraft-pi-ruby'
-#require './minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
@@ -23,7 +22,6 @@ class NumericalMCPI
   end
 
   def disp_min( number )
-#    puts "#{number} min"
     [8, 0].each do |offset|
       ddigt( number % 10, offset )
       number /= 10
@@ -31,7 +29,6 @@ class NumericalMCPI
   end
 
   def disp_sec( number )
-#    puts "#{number} sec"
     [28, 20].each do |offset|
       ddigt( number % 10, offset )
       number /= 10
@@ -39,19 +36,15 @@ class NumericalMCPI
   end
 
   def ddigt( number, digit )
-#    Thread.new() do
-      14.downto(4) do |y|
-#      puts "block #{TNum::T[number][14-y]}"
-        0.upto(5) do |x|
-          block = TNum::T[number][14-y][x]
-#          @mc.set_block( x+digit, y, 0, block ) if block
-          @mc.set_block( x+digit, y, 0, block )
-        end
+    14.downto(4) do |y|
+      0.upto(5) do |x|
+        block = TNum::T[number][14-y][x]
+        @mc.set_block( x+digit, y, 0, block )
       end
-#    end
+    end
   end
 end
 
-NumericalMCPI.new.ddigt(8, 28)
+#NumericalMCPI.new.ddigt(8, 28)
 #NumericalMCPI.new
 
