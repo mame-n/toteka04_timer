@@ -1,0 +1,10 @@
+class Foo1
+  def bar
+    puts "bar"
+  end
+  
+  def bar( x )
+    puts "bar x #{x}"
+  end
+end
+

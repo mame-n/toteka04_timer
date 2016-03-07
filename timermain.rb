@@ -15,7 +15,7 @@ class Timer_ctrl
   end
 
   def set_time( time_minutes )
-    NumericalMCPI.say "Set time as #{time_minutes} min."
+#    NumericalMCPI.say "Set time as #{time_minutes} min."
     DRb.start_service
     @ts = DRbObject.new_with_uri( TSURI )
     @total_sec = (time_minutes * 60).to_i # Cut less than 1sec.
@@ -25,16 +25,11 @@ class Timer_ctrl
 
   def timer_loop_start
     Thread.new( @ts, @total_sec ) do |ts, total_sec|
-#      puts "***#{total_sec}**"
       @real_time = Time.now
       total_sec.downto(0) do |time_sec|
-#        puts "Write Before #{time_sec} #{Time.now.to_f - @real_time.to_f}"
         ts.write(["timer", time_sec])
-#        puts "Write After  #{Time.now.to_f - @real_time.to_f}"
         sleep( 0.970 )
-#        puts "Write Sleep  #{Time.now.to_f - @real_time.to_f}"
       end
-      puts "Finish timer thread. #{Time.now - @real_time}"
     end
   end
 
@@ -43,7 +38,7 @@ class Timer_ctrl
     timer_loop_start
 
     while (timer_sec = @ts.take(["timer", nil])[1]) != 0
-      puts "Take&Disp#{timer_sec} : #{Time.now.to_f - @real_time.to_f}"
+      puts "#{timer_sec}"
       disp_time( timer_sec )
       sleep(0.8)
     end
@@ -59,9 +54,21 @@ class Timer_ctrl
     sec = total_sec % 60
 
     mcpi = NumericalMCPI.new
-    mcpi.disp_sec( sec )
-    mcpi.disp_min( min ) if @prev_sec <= sec
-    @prev_sec = sec
+
+    if total_sec > 10
+      mcpi.view_direction( :center )
+      mcpi.disp_sec( sec )
+      mcpi.disp_min( min ) if @prev_sec <= sec
+      @prev_sec = sec
+    elsif total_sec < 10 && total_sec > 0
+      mcpi.view_direction( :right )
+      mcpi.disp_big_sec( sec )
+    elsif total_sec == 0
+      mcpi.view_direction( :left )
+      mcpi.crapcrap
+    else
+      NumericalMCPI.say "Illegal time. #{total_sec}"
+    end
   end
 
 end
