@@ -1,17 +1,21 @@
-require "./Position"
-
 class Minecraft
   def say( s )
     puts s
   end
   
   def set_block( x, y, z, b )
+    puts "set_blocks #{x},#{y},#{z},#{b}"
   end
 
   def set_blocks( x1, y1, z1, x2, y2, z2, b )
   end
 
   def set_player_position( x, y, z )
+    puts "set_player_position #{x},#{y},#{z}"
+  end
+
+  def set_camera_mode( mode )
+    puts "set_camera_mode #{mode}"
   end
 end
 

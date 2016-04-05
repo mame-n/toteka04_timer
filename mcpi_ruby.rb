@@ -1,4 +1,4 @@
-require './minecraft-pi-ruby'
+require 'minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
@@ -44,28 +44,12 @@ class NumericalMCPI
     end
   end
 
-  def disp_big_sec( number )
-    [28, 20].each do |offset|
-      ddigt_big( number % 10, offset )
-      number /= 10
-    end
+  def player_position( status )
+    @mc.set_player_position( status[0], status[1], status[2] )
+    @mc.set_camera_mode( status[3] )
   end
 
-  def view_direction( direction )
-    case direction
-    when :center
-      dir_vec = Position.new( 5, 0, 1 )
-    when :right
-      dir_vec = Position.new( 0, 5, 1 )
-    when :left
-      dir_vec = Position.new( 0, -5, 1 )
-    else
-    end
-
-    @mc.set_view_direction( dir_vec )
-  end
-
-  def crapcrap()
+  def crap_crap()
     30.times do
       close_hand
       sleep( 0.1 )
@@ -84,20 +68,10 @@ class NumericalMCPI
     end
   end
 
-  def ddigt_big( number, digit )
-    14.downto(4) do |y|
-      0.upto(5) do |x|
-#        block = TNum::BigT[number][14-y][x]
-        block = TNum::T[number][14-y][x]
-       @mc.set_block( x+digit, y, 0, block )
-      end
-    end
-  end
-
   def open_hand
     14.downto(4) do |y|
       0.upto(5) do |x|
-#        block = THand::Open[14-y][x]
+#        block = THand::Open_hand[14-y][x]
         block = TNum::T[0][14-y][x]
         @mc.set_block( x, y, 0, block )
       end
@@ -107,7 +81,7 @@ class NumericalMCPI
   def close_hand
     14.downto(4) do |y|
       0.upto(5) do |x|
-#        block = THand::Close[14-y][x]
+#        block = THand::Close_hand[14-y][x]
         block = TNum::T[0][14-y][x]
         @mc.set_block( x, y, 0, block )
       end
