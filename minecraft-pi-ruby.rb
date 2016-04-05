@@ -14,8 +14,13 @@ class Minecraft
     puts "set_player_position #{x},#{y},#{z}"
   end
 
-  def set_camera_mode( mode )
-    puts "set_camera_mode #{mode}"
+  def get_ground_height( x, y )
+    h = x * 2 - y
+    h < 15 ? h : 3
+  end
+
+  def get_block( x, y, z )
+    x + y -z
   end
 end
 
