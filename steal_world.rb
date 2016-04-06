@@ -1,9 +1,9 @@
 require "pstore"
 require "minecraft-pi-ruby"
 
-maxx = maxz = 10
+maxx = maxz = 100
 minx, minz = -1 * maxx, -1 * maxx
-maxy, miny = 15, 0
+maxy, miny = 63, 0
 
 $mc = Minecraft.new
 
@@ -15,7 +15,7 @@ end
 
 def steal_wall( x, maxy, minz, maxz )
   (minz..maxz).map do |z|
-    ground_level = $mc.get_ground_height( x, z )
+    ground_level = $mc.get_ground_height( x, z ).to_i
     steal_prop( x, z, ground_level, maxy ).unshift( ground_level )
   end
 end
@@ -30,4 +30,3 @@ block_world = PStore.new( "toteka_timer_world.db" )
 block_world.transaction do
   block_world['root'] = steal_world( minx, maxx, maxy, minz, maxz )
 end
-

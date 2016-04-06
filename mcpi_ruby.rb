@@ -1,5 +1,5 @@
 require 'socket'
-require 'minecraft-pi-ruby'
+require './minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
@@ -27,8 +27,25 @@ class Minecraft
 end
 
 class NumericalMCPI
+  $player_posi_10sec = [
+                        [  50,  10,  50, :normal], # 0sec
+                        [  10,  10,  10, :normal], # 1sec
+                        [ -20,  10, 100, :normal],
+                        [ 100,  10,  10, :normal],
+                        [  90,  80, -20, :normal],
+                        [-100,  10,   0, :follow],
+                        [  10,  10, -50, :normal],
+                        [  10,  60,  10, :normal],
+                        [ -80,  10,-100, :follow],
+                        [  10, -10,  80, :normal],
+                        [  30,  10,  10, :normal],
+                       ]
+
+  $player_posi = [23, 2, 19, :normal]
+
   def initialize
     @mc = Minecraft.new
+    @prev_sec = 0
 #    @mc.reset
   end
 
@@ -36,6 +53,56 @@ class NumericalMCPI
     Minecraft.new.say "MCPI::Ruby : #{s}"
   end
 
+  def say
+    @mc.say "MCPI::Ruby : #{s}"
+  end
+
+  def load_world( dbn )
+    block_world = PStore.new( dbn )
+
+    block_world.transaction( true ) do
+      block_world['root'].each_with_index do |wall, x|
+        puts "The #{x}th wall"
+        wall.each_with_index do |prop, z|
+          prop.inject( prop.shift ) do |height, block|
+            @mc.set_block( x - 100, height, z - 100 )
+            height + 1
+          end
+        end
+      end
+    end
+  end
+
+  def initial_time_set( total_sec )
+    sec = total_sec % 60
+    min = total_sec / 60
+
+    disp_sec( sec )
+    disp_min( min )
+    @prev_sec = sec
+
+    player_position( $player_posi )
+  end
+
+  def display( total_sec )
+    min = total_sec / 60
+    sec = total_sec % 60
+
+    if total_sec > 10
+      disp_sec( sec )
+      disp_min( min ) if @prev_sec <= sec
+      @prev_sec = sec
+
+    elsif total_sec <= 10 && total_sec >= 0
+      player_position( player_posi_10sec[total_sec] )
+#      crap_crap if total_sec == 0
+
+    else
+      say "Illegal time. #{total_sec}"
+    end
+  end
+
+  private
   def disp_min( number )
     [8, 0].each do |offset|
       ddigt( number % 10, offset )
@@ -64,7 +131,6 @@ class NumericalMCPI
     end
   end
 
-  private
   def ddigt( number, digit )
     14.downto(4) do |y|
       0.upto(5) do |x|
@@ -97,4 +163,3 @@ end
 
 #NumericalMCPI.new.ddigt(8, 28)
 #NumericalMCPI.new
-
