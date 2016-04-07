@@ -14,6 +14,8 @@ def steal_world( minx, maxx, maxy, minz, maxz )
 end
 
 def steal_wall( x, maxy, minz, maxz )
+  puts "The #{x}th wall"
+
   (minz..maxz).map do |z|
     ground_level = $mc.get_ground_height( x, z ).to_i
     steal_prop( x, z, ground_level, maxy ).unshift( ground_level )
@@ -21,6 +23,8 @@ def steal_wall( x, maxy, minz, maxz )
 end
 
 def steal_prop( x, z, g_level, maxy )
+  puts "The #[z]th prop"
+
   (g_level..maxy).map do |y|
     $mc.get_block( x, y, z )
   end

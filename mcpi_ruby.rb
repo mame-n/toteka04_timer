@@ -46,7 +46,6 @@ class NumericalMCPI
   def initialize
     @mc = Minecraft.new
     @prev_sec = 0
-#    @mc.reset
   end
 
   def self.say( s )
@@ -74,12 +73,9 @@ class NumericalMCPI
   end
 
   def initial_time_set( total_sec )
-    sec = total_sec % 60
-    min = total_sec / 60
-
-    disp_sec( sec )
-    disp_min( min )
-    @prev_sec = sec
+    disp_sec( total_sec % 60 )
+    disp_min( total_sec / 60 )
+    @prev_sec = total_sec % 60
 
     player_position( $player_posi )
   end
@@ -90,8 +86,11 @@ class NumericalMCPI
 
     if total_sec > 10
       disp_sec( sec )
-      disp_min( min ) if @prev_sec <= sec
-      @prev_sec = sec
+
+      if @prev_sec <= sec
+        disp_min( min ) 
+        @prev_sec = sec
+      end
 
     elsif total_sec <= 10 && total_sec >= 0
       player_position( player_posi_10sec[total_sec] )

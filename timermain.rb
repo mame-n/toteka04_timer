@@ -4,6 +4,7 @@ require 'pp'
 
 class Timer_ctrl
   TSURI = 'druby://localhost:9999'
+  MaxTimerValue = 99*60+59
 
   def initialize
     @mcpi = NumericalMCPI.new
@@ -13,22 +14,19 @@ class Timer_ctrl
   end
 
   def set_time( time_minutes )
-    DRb.start_service
-    @ts = DRbObject.new_with_uri( TSURI )
-
     total_sec = (time_minutes * 60).to_i  # Cut less than 1sec.
-    total_sec = 99*60+59 if total_sec > 99*60+59
+    total_sec = MaxTimerValue if total_sec > MaxTimerValue
 
     @mcpi.say "Set time. #{total_sec/60}:#{total_sec%60}"
     @mcpi.initial_time_set( total_sec )
   end
 
-  def timer_loop_start
+  def timer_loop_start( ts )
     Thread.new( @ts, @total_sec ) do |ts, total_sec|
       @real_time = Time.now
 
       total_sec.downto(0) do |time_sec|
-        @ts.write(["timer", time_sec])
+        ts.write(["timer", time_sec])
         sleep( 0.970 )
       end
     end
@@ -37,9 +35,12 @@ class Timer_ctrl
   def start_timer
     @mcpi.say "Start timer!!"
 
-    timer_loop_start
+    DRb.start_service
+    ts = DRbObject.new_with_uri( TSURI )
 
-    while (timer_sec = @ts.take(["timer", nil])[1]) != 0
+    timer_loop_start( ts )
+
+    while (timer_sec = ts.take(["timer", nil])[1]) != 0
       puts "#{timer_sec}"
       @mcpi.display( timer_sec )
       sleep(0.8)
