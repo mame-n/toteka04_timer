@@ -1,5 +1,5 @@
 require 'socket'
-require './minecraft-pi-ruby'
+require 'minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
@@ -13,7 +13,7 @@ class Minecraft
   end
 
   def get_block(x,y,z)
-    puts @connection.send_with_response "world.getBlock(#{x}, #{y}, #{z})"
+    @connection.send_with_response "world.getBlock(#{x}, #{y}, #{z})"
     return 
   end
 
@@ -28,18 +28,18 @@ end
 
 class NumericalMCPI
   $player_posi_10sec = [
-                        [  50,  10,  50, :normal], # 0sec
-                        [  10,  10,  10, :normal], # 1sec
-                        [ -20,  10, 100, :normal],
-                        [ 100,  10,  10, :normal],
-                        [  90,  80, -20, :normal],
-                        [-100,  10,   0, :follow],
-                        [  10,  10, -50, :normal],
-                        [  10,  60,  10, :normal],
-                        [ -80,  10,-100, :follow],
-                        [  10, -10,  80, :normal],
-                        [  30,  10,  10, :normal],
-                       ]
+                         [  53,  10,  51, :follow],
+                         [ -20,   0, 102, :follow],
+                         [ -94,   0,  -7, :follow],
+                         [  10,  10, -50, :follow],
+                         [  10,  20,  10, :follow],
+                         [ -80,  10,-100, :follow],
+                         [  10,   0,  80, :follow],
+                         [  30,  10,  10, :follow],
+                         [ 100,  10,  30, :follow],
+                         [  53,  10,  85, :follow],
+                         [ 100,  10,  30, :follow],
+                        ]
 
   $player_posi = [23, 2, 19, :normal]
 
@@ -52,7 +52,7 @@ class NumericalMCPI
     Minecraft.new.say "MCPI::Ruby : #{s}"
   end
 
-  def say
+  def say( s )
     @mc.say "MCPI::Ruby : #{s}"
   end
 
@@ -93,7 +93,7 @@ class NumericalMCPI
       end
 
     elsif total_sec <= 10 && total_sec >= 0
-      player_position( player_posi_10sec[total_sec] )
+      player_position( $player_posi_10sec[total_sec] )
 #      crap_crap if total_sec == 0
 
     else
@@ -118,7 +118,7 @@ class NumericalMCPI
 
   def player_position( status )
     @mc.set_player_position( status[0], status[1], status[2] )
-    @mc.set_camera_mode( status[3] )
+#    @mc.set_camera_mode( status[3] )
   end
 
   def crap_crap()

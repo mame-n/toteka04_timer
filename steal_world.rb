@@ -1,5 +1,6 @@
 require "pstore"
 require "minecraft-pi-ruby"
+require "mcpi_ruby"
 
 maxx = maxz = 100
 minx, minz = -1 * maxx, -1 * maxx

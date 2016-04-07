@@ -14,18 +14,19 @@ class Timer_ctrl
   end
 
   def set_time( time_minutes )
-    total_sec = (time_minutes * 60).to_i  # Cut less than 1sec.
-    total_sec = MaxTimerValue if total_sec > MaxTimerValue
+    @total_sec = (time_minutes * 60).to_i  # Cut less than 1sec.
+    @total_sec = MaxTimerValue if @total_sec > MaxTimerValue
 
-    @mcpi.say "Set time. #{total_sec/60}:#{total_sec%60}"
-    @mcpi.initial_time_set( total_sec )
+    @mcpi.say "Set time. #{@total_sec/60}:#{@total_sec%60}"
+    @mcpi.initial_time_set( @total_sec )
   end
 
   def timer_loop_start( ts )
-    Thread.new( @ts, @total_sec ) do |ts, total_sec|
+    Thread.new( ts, @total_sec ) do |ts, total_sec|
       @real_time = Time.now
 
       total_sec.downto(0) do |time_sec|
+        puts "***#{time_sec}"
         ts.write(["timer", time_sec])
         sleep( 0.970 )
       end
