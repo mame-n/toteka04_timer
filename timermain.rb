@@ -26,7 +26,7 @@ class Timer_ctrl
       @real_time = Time.now
 
       total_sec.downto(0) do |time_sec|
-        puts "***#{time_sec}"
+        puts "**S : #{time_sec}"
         ts.write(["timer", time_sec])
         sleep( 0.970 )
       end
@@ -41,9 +41,10 @@ class Timer_ctrl
 
     timer_loop_start( ts )
 
-    while (timer_sec = ts.take(["timer", nil])[1]) != 0
-      puts "#{timer_sec}"
+    while (timer_sec = ts.take(["timer", nil])[1]) >= 0
+      puts "**R : #{timer_sec}"
       @mcpi.display( timer_sec )
+      break if timer_sec == 0
       sleep(0.8)
     end
 

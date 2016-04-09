@@ -28,18 +28,18 @@ end
 
 class NumericalMCPI
   $player_posi_10sec = [
-                         [  53,  10,  51, :follow],
-                         [ -20,   0, 102, :follow],
-                         [ -94,   0,  -7, :follow],
-                         [  10,  10, -50, :follow],
-                         [  10,  20,  10, :follow],
-                         [ -80,  10,-100, :follow],
-                         [  10,   0,  80, :follow],
-                         [  30,  10,  10, :follow],
-                         [ 100,  10,  30, :follow],
-                         [  53,  10,  85, :follow],
-                         [ 100,  10,  30, :follow],
-                        ]
+                        [  53,  10,  51, :follow],
+                        [ -20,   0, 102, :follow],
+                        [ -94,   0,  -7, :follow],
+                        [  10,  10, -50, :follow],
+                        [  10,  20,  10, :follow],
+                        [ -80,  10,-100, :follow],
+                        [  10,   0,  80, :follow],
+                        [  30,  10,  10, :follow],
+                        [ 100,  10,  30, :follow],
+                        [  53,  10,  85, :follow],
+                        [ 100,  10,  30, :follow],
+                       ]
 
   $player_posi = [23, 2, 19, :normal]
 
@@ -73,8 +73,8 @@ class NumericalMCPI
   end
 
   def initial_time_set( total_sec )
-    disp_sec( total_sec % 60 )
-    disp_min( total_sec / 60 )
+    disp_sec( total_sec % 60, false )
+    disp_min( total_sec / 60, false )
     @prev_sec = total_sec % 60
 
     player_position( $player_posi )
@@ -83,42 +83,47 @@ class NumericalMCPI
   def display( total_sec )
     min = total_sec / 60
     sec = total_sec % 60
+    
+    block_highlite = total_sec < 10 ? true : false
+    disp_min( min, block_highlite ) if total_sec == 9
 
-    if total_sec > 10
-      disp_sec( sec )
-
-      if @prev_sec <= sec
-        disp_min( min ) 
-        @prev_sec = sec
-      end
-
-    elsif total_sec <= 10 && total_sec >= 0
-      player_position( $player_posi_10sec[total_sec] )
-#      crap_crap if total_sec == 0
-
-    else
-      say "Illegal time. #{total_sec}"
+    disp_sec( sec, block_highlite )
+    if @prev_sec <= sec
+      disp_min( min, block_highlite )
+      @prev_sec = sec
     end
+
+    #    crap_crap if total_sec == 0 if total_sec == 0
   end
 
   private
-  def disp_min( number )
+  def disp_min( number, block )
     [8, 0].each do |offset|
-      ddigt( number % 10, offset )
+      ddigt( number % 10, offset, block )
       number /= 10
     end
   end
 
-  def disp_sec( number )
+  def disp_sec( number, block )
     [28, 20].each do |offset|
-      ddigt( number % 10, offset )
+      ddigt( number % 10, offset, block )
       number /= 10
+    end
+  end
+
+  def ddigt( number, digit, block )
+    block_color = block ? Block::GOLD_BLOCK : Block::STONE
+    puts "**** #{block_color}"
+    14.downto(4) do |y|
+      0.upto(5) do |x|
+        @mc.set_block( x+digit, y, 0, block_color * TNum::T[number][14-y][x] )
+      end
     end
   end
 
   def player_position( status )
     @mc.set_player_position( status[0], status[1], status[2] )
-#    @mc.set_camera_mode( status[3] )
+    #    @mc.set_camera_mode( status[3] )
   end
 
   def crap_crap()
@@ -130,19 +135,10 @@ class NumericalMCPI
     end
   end
 
-  def ddigt( number, digit )
-    14.downto(4) do |y|
-      0.upto(5) do |x|
-        block = TNum::T[number][14-y][x]
-        @mc.set_block( x+digit, y, 0, block )
-      end
-    end
-  end
-
   def open_hand
     14.downto(4) do |y|
       0.upto(5) do |x|
-#        block = THand::Open_hand[14-y][x]
+        #        block = THand::Open_hand[14-y][x]
         block = TNum::T[0][14-y][x]
         @mc.set_block( x, y, 0, block )
       end
@@ -152,7 +148,7 @@ class NumericalMCPI
   def close_hand
     14.downto(4) do |y|
       0.upto(5) do |x|
-#        block = THand::Close_hand[14-y][x]
+        #        block = THand::Close_hand[14-y][x]
         block = TNum::T[0][14-y][x]
         @mc.set_block( x, y, 0, block )
       end
