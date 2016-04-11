@@ -1,5 +1,5 @@
 require 'socket'
-require 'minecraft-pi-ruby'
+require './minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
