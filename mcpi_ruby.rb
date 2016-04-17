@@ -1,5 +1,5 @@
 require 'socket'
-require 'minecraft-pi-ruby'
+require './minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
@@ -113,7 +113,7 @@ class NumericalMCPI
 
   def ddigt( number, digit, block )
     block_color = block ? Block::GOLD_BLOCK : Block::STONE
-    puts "**** #{block_color}"
+#    puts "**** #{block_color}"
     14.downto(4) do |y|
       0.upto(5) do |x|
         @mc.set_block( x+digit, y, 0, block_color * TNum::T[number][14-y][x] )
