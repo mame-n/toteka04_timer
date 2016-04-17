@@ -17,15 +17,12 @@ class Timer_ctrl
   end
 
   def set_time( time_minutes )
-    puts "***"
     time_seconds = (time_minutes * 60).to_i  # Cut less than 1sec.
     time_seconds = MaxTimerValue if time_seconds > MaxTimerValue
-    puts "****"
 
     @mcpi.say "Set time. #{time_seconds/60}:#{time_seconds%60}"
     @mcpi.initial_time_set( time_seconds )
     @set_time = time_seconds
-    puts "*****"
   end
 
   def start
@@ -46,9 +43,7 @@ class Timer_ctrl
   def pause
     puts "Pause : #{@pause_time} sec"
     thread_kill
-    puts "%%%%"
-    set_time( @pasue_time / 60.0 )
-    puts "%%%%%"
+    set_time( @pause_time / 60.0 )
   end
 
   def resume
