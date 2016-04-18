@@ -25,7 +25,7 @@ tm = Timer_ctrl.new
 
 print "timer >> "
 while cmds = STDIN.gets
-  begin
+#  begin
     cmd = cmds.chomp.split
     if numerical_string?( cmd[0] )
       tm.set_time( cmd[0].to_f )
@@ -51,17 +51,17 @@ while cmds = STDIN.gets
         tm.cancel
       when "value"
         tm.view_time_value
-      when "world"
+      when "reset_world"
         tm.reset_world
       when "quit"
         puts "Bye"
         break
       else
-        puts "set/start/stop/pause(p)/resume(r)/cancel/reset/quit"
+        puts "set/start/stop/pause(p)/resume(r)/cancel/reset/reset_world/quit"
       end
     end
     print "timer >> "
-  rescue 
-    tm.cancel
-  end
+#  rescue 
+#    tm.cancel
+#  end
 end

@@ -17,20 +17,20 @@ class Timer_ctrl
   end
 
   def set_time( time_minutes )
-    if time_minutes != 0
+#    if time_minutes != 0
       time_seconds = (time_minutes * 60).to_i  # Cut less than 1sec.
       time_seconds = MaxTimerValue if time_seconds > MaxTimerValue
-    else
-      time_seconds = @set_time
-    end
+#    else
+#      time_seconds = @set_time
+#    end
 
-    @mcpi.say "Set time. #{time_seconds/60}:#{time_seconds%60}"
+#    @mcpi.say "Set time. #{time_seconds/60}:#{time_seconds%60}"
     @mcpi.initial_time_set( time_seconds )
     @set_time = time_seconds
   end
   
   def start( timer_value = @set_time )
-    @mcpi.say "Start timer!! #{timer_value/60}:#{timer_value%60}"
+#    @mcpi.say "Start timer!! #{timer_value/60}:#{timer_value%60}"
 
     DRb.start_service
     ts = DRbObject.new_with_uri( TSURI )
@@ -67,7 +67,8 @@ class Timer_ctrl
   end
 
   def reset_world
-    @mcpi.load_world( "toteka_timer_world.db" )
+    puts "* Reset world *"
+    @mcpi.reset_world
   end
 
   private

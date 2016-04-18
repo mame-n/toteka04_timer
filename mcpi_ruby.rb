@@ -1,5 +1,5 @@
 require 'socket'
-require './minecraft-pi-ruby'
+require 'minecraft-pi-ruby'
 require './num_block'
 
 class Minecraft
@@ -8,8 +8,7 @@ class Minecraft
     set_blocks(-100, -1,  -100, 100, 1, 100, Block::GRASS)
     set_blocks(-100, -63,  -100, 100, -2, 100, Block::STONE)
 
-    set_player_position(23, 2, 19)
-    set_view_direction( 5, 0, 1 )
+    set_player_position( $player_posi )
   end
 
   def get_block(x,y,z)
@@ -27,12 +26,13 @@ class Minecraft
 end
 
 class NumericalMCPI
-  $player_posi_10sec = [26, 2, 17, :normal]
-  $player_posi = [23, 2, 19, :normal]
+  $player_posi_10sec = [26, 5, 10, :normal]
+  $player_posi = [19, 5, 15, :normal]
 
   def initialize
     @mc = Minecraft.new
     @prev_sec = 0
+    player_position( $player_posi )
   end
 
   def self.say( s )
@@ -60,8 +60,10 @@ class NumericalMCPI
   end
 
   def initial_time_set( total_sec )
-    disp_sec( total_sec % 60, false )
-    disp_min( total_sec / 60, false )
+    color = block_color( false )
+    disp_sec( total_sec % 60, color )
+    disp_min( total_sec / 60, color )
+    dot( color )
     @prev_sec = total_sec % 60
 
     player_position( $player_posi )
@@ -71,38 +73,47 @@ class NumericalMCPI
     min = total_sec / 60
     sec = total_sec % 60
 
-    player_position( $player_posi_10sec ) if total_sec == 9
+    block_color = block_color( total_sec < 10 ? true : false )
+    if total_sec == 9
+      player_position( $player_posi_10sec )
+      disp_min( min, block_color )
+      dot( block_color )
+      @mc.say "Prepare of applause!!!"
+    end
 
-    block_highlite = total_sec < 10 ? true : false
-    disp_min( min, block_highlite ) if total_sec == 9
-
-    disp_sec( sec, block_highlite )
+    disp_sec( sec, block_color )
     if @prev_sec <= sec
-      disp_min( min, block_highlite )
+      disp_min( min, block_color )
       @prev_sec = sec
     end
 
     #    crap_crap if total_sec == 0 if total_sec == 0
   end
 
+  def reset_world
+    @mc.set_blocks(-100, 0,  -100, 100, 63, 100, Block::AIR)
+    @mc.set_blocks(-100, -1,  -100, 100, 1, 100, Block::GRASS)
+    @mc.set_blocks(-100, -63,  -100, 100, -2, 100, Block::STONE)
+
+    player_position( $player_posi )
+  end
+
   private
-  def disp_min( number, block )
-    [8, 0].each do |offset|
-      ddigt( number % 10, offset, block )
+  def disp_min( number, block_color )
+    [9, 1].each do |offset|
+      ddigt( number % 10, offset, block_color )
       number /= 10
     end
   end
 
-  def disp_sec( number, block )
-    @mc.say "Prepare of applause!!!" if block
+  def disp_sec( number, block_color )
     [28, 20].each do |offset|
-      ddigt( number % 10, offset, block )
+      ddigt( number % 10, offset, block_color )
       number /= 10
     end
   end
 
-  def ddigt( number, digit, block )
-    block_color = block ? Block::GOLD_BLOCK : Block::STONE
+  def ddigt( number, digit, block_color )
 #    puts "**** #{block_color}"
     14.downto(4) do |y|
       0.upto(5) do |x|
@@ -111,9 +122,18 @@ class NumericalMCPI
     end
   end
 
+  def block_color( block )
+    block ? Block::GOLD_BLOCK : Block::STONE
+  end
+
   def player_position( status )
     @mc.set_player_position( status[0], status[1], status[2] )
     #    @mc.set_camera_mode( status[3] )
+  end
+
+  def dot(block_color)
+    @mc.set_block( 17, 11, 0, block_color )
+    @mc.set_block( 17,  7, 0, block_color )
   end
 
   def crap_crap()
