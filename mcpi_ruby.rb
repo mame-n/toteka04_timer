@@ -27,20 +27,7 @@ class Minecraft
 end
 
 class NumericalMCPI
-  $player_posi_10sec = [
-                        [  53,  10,  51, :follow],
-                        [ -20,   0, 102, :follow],
-                        [ -94,   0,  -7, :follow],
-                        [  10,  10, -50, :follow],
-                        [  10,  20,  10, :follow],
-                        [ -80,  10,-100, :follow],
-                        [  10,   0,  80, :follow],
-                        [  30,  10,  10, :follow],
-                        [ 100,  10,  30, :follow],
-                        [  53,  10,  85, :follow],
-                        [ 100,  10,  30, :follow],
-                       ]
-
+  $player_posi_10sec = [26, 2, 17, :normal]
   $player_posi = [23, 2, 19, :normal]
 
   def initialize
@@ -83,7 +70,9 @@ class NumericalMCPI
   def display( total_sec )
     min = total_sec / 60
     sec = total_sec % 60
-    
+
+    player_position( $player_posi_10sec ) if total_sec == 9
+
     block_highlite = total_sec < 10 ? true : false
     disp_min( min, block_highlite ) if total_sec == 9
 
@@ -105,6 +94,7 @@ class NumericalMCPI
   end
 
   def disp_sec( number, block )
+    @mc.say "Prepare of applause!!!" if block
     [28, 20].each do |offset|
       ddigt( number % 10, offset, block )
       number /= 10
@@ -113,7 +103,7 @@ class NumericalMCPI
 
   def ddigt( number, digit, block )
     block_color = block ? Block::GOLD_BLOCK : Block::STONE
-    puts "**** #{block_color}"
+#    puts "**** #{block_color}"
     14.downto(4) do |y|
       0.upto(5) do |x|
         @mc.set_block( x+digit, y, 0, block_color * TNum::T[number][14-y][x] )

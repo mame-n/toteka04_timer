@@ -1,10 +1,8 @@
-require "thread"
 require "./timermain"
-
-cmds_queue = Queue.new
-tm = Timer_ctrl.new
+#require "./dummy_timer"
 
 def integer_string?(str)
+  return false unless str
   Integer(str)
   true
 rescue ArgumentError
@@ -12,6 +10,7 @@ rescue ArgumentError
 end
 
 def float_string?(str)
+  return false unless str
   Float(str)
   true
 rescue ArgumentError
@@ -22,53 +21,47 @@ def numerical_string?( str )
   integer_string?( str ) || float_string?( str ) ? true : false
 end
 
-main_thread = Thread.start do
-  while cmds = cmds_queue.deq
-    puts "Activate commands thread #{main_thread} = #{cmds}"
-    if numerical_string?( cmds[0] )
-      tm.set_time( cmds[0].to_f )
+tm = Timer_ctrl.new
+
+print "timer >> "
+while cmds = STDIN.gets
+  begin
+    cmd = cmds.chomp.split
+    if numerical_string?( cmd[0] )
+      tm.set_time( cmd[0].to_f )
     else
-      case cmds[0]
+      case cmd[0]
       when "set"
-        tm.set_time( cmds[1].to_f )
+        tm.set_time( cmd[1].to_f )
       when "start"
         tm.start
-      when "r"  # Resume
+      when "resume"
         tm.resume
-      when "p"  # Pause
+      when "r"
+        tm.resume
+      when "pause"
         tm.pause
-      when "s"
-        tm.stop
+      when "p"
+        tm.pause
+      when "stop"
+        tm.pause
       when "reset"
         tm.reset
+      when "cancel"
+        tm.cancel
+      when "value"
+        tm.view_time_value
       when "world"
         tm.reset_world
       when "quit"
-        tm.quit
         puts "Bye"
+        break
       else
-        puts "set/start/resume/pause/reset/quit"
+        puts "set/start/stop/pause(p)/resume(r)/cancel/reset/quit"
       end
     end
-    sleep 1
-#    puts "Finish calling tm"
+    print "timer >> "
+  rescue 
+    tm.cancel
   end
 end
-
-def kill_thread (t_name)
-  Thread.kill(t_name)
-end
-
-begin
-  print "timer >> "
-  cmds = gets.chomp.split
-  cmds_queue.enq(cmds)
-#  if "quit" == cmds[0]
-#    puts "Fin"
-#    sleep 4
-#    kill_thread(main_thread)
-#    break
-#  end
-end while cmds
-
-main_thread.join

@@ -12,62 +12,58 @@ class Timer_ctrl
     DRb.start_service(TSURI, Rinda::TupleSpace.new)
     @tuple_thread = Thread.new() { DRb.thread.join }
 
-    @time_seconds = 0
+    @set_time = 0
     @pause_time = 0
   end
 
   def set_time( time_minutes )
-    time_seconds = (time_minutes * 60).to_i  # Cut less than 1sec.
-    time_seconds = MaxTimerValue if time_seconds > MaxTimerValue
+    if time_minutes != 0
+      time_seconds = (time_minutes * 60).to_i  # Cut less than 1sec.
+      time_seconds = MaxTimerValue if time_seconds > MaxTimerValue
+    else
+      time_seconds = @set_time
+    end
 
     @mcpi.say "Set time. #{time_seconds/60}:#{time_seconds%60}"
     @mcpi.initial_time_set( time_seconds )
-    @time_seconds = time_seconds
+    @set_time = time_seconds
   end
-
-  def start
-    @mcpi.say "Start timer!!"
+  
+  def start( timer_value = @set_time )
+    @mcpi.say "Start timer!! #{timer_value/60}:#{timer_value%60}"
 
     DRb.start_service
     ts = DRbObject.new_with_uri( TSURI )
 
-    @timer_thread = timer_loop_start( ts, @time_seconds )
-    puts "Finish send timer"
-    @receive_timer = receive_timer_loop( ts )
-    puts "Finish receive timer"
+    @timer_thread = timer_loop_start( ts, timer_value )
+    @receive_thread = receive_timer_loop( ts )
 
 #    puts "RESULT #{Time.now - @real_time}"
-#    sleep(3)  # wait for stop timer loop thread
-  end
-
-  def start_wo_timer_loop
-    receive_timer_loop( ts )
-    pp Thread.list
   end
 
   def pause
-    puts "Pause : #{@pause_time} sec"
-    Thread.kill( @timer_thread )
+    puts "Pause : #{@pause_time} sec" unless @pause_time == 0
+    thread_kill
+    @mcpi.initial_time_set( @pause_time )
   end
 
   def resume
-    puts "Resume :"
-    set_time( @pause_time/60.0 )
-    start
+#    puts "Resume :"
+    start( @pause_time )
   end
 
   def reset
     set_time( 0 )
   end
 
-  def stop
+  def cancel
     puts "**Stop**"
-    Thread.kill( @timer_thread )
-    Thread.kill( @tuple_thread )
-    sleep(3)  # wait for stop timer loop thread
-    pp Thread.list
+    thread_kill
+    @mcpi.initial_time_set( @set_time )
+  end
 
-    set_time( @time_seconds )
+  def view_time_value
+    @mcpi.say "Set time is #{@set_time} sec"
   end
 
   def reset_world
@@ -90,13 +86,23 @@ class Timer_ctrl
   def receive_timer_loop( ts )
     Thread.new( ts ) do |ts|
       while (time = ts.take(["timer", nil])[1]) >= 0
-        puts "**R : #{time}"
+#        puts "**R : #{time}"
         @mcpi.display( time )
         @pause_time = time
         break if time == 0
         sleep(0.8)
       end
+      puts "End : input \"stop\" and return"
+      print "timer >> "
     end
+  end
+
+  def thread_kill
+    Thread.kill( @timer_thread ) if @timer_thread
+    Thread.kill( @receive_thread ) if @receive_thread
+    Thread.kill( @tuple_thread ) if @tuple_thread
+#    sleep(1)  # wait for stop timer loop thread
+#    pp Thread.list
   end
 
 end
