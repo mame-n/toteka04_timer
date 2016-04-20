@@ -26,7 +26,7 @@ class Minecraft
 end
 
 class NumericalMCPI
-  $player_posi_10sec = [26, 5, 10, :normal]
+  $player_posi_10sec = [26, 7, 10, :normal]
   $player_posi = [19, 5, 15, :normal]
 
   def initialize
@@ -86,7 +86,12 @@ class NumericalMCPI
       disp_min( min, block_color )
       @prev_sec = sec
     end
-
+    
+    if total_sec == 0
+      1.times do
+        applause
+      end
+    end
     #    crap_crap if total_sec == 0 if total_sec == 0
   end
 
@@ -134,6 +139,21 @@ class NumericalMCPI
   def dot(block_color)
     @mc.set_block( 17, 11, 0, block_color )
     @mc.set_block( 17,  7, 0, block_color )
+  end
+
+  def applause
+    offset_x = 26
+    offset_y = 8
+    (7..0).each do |y|
+      (0..3).each do |x|
+        @mc.set_block( x + offset_x, y + offset_y, 0, Block::STONE_SLAB_DOUBLE)
+      end
+    end
+  end
+
+  def reset_applause
+    @mc.set_blocks(13,-4,0,38,16,0,Block::AIR)
+    @mc.set_blocks(13,-1,0,38,1,0,Block::GRASS)
   end
 
   def crap_crap()
