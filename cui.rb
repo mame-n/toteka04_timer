@@ -44,7 +44,7 @@ while cmds = STDIN.gets
       when "p"
         tm.pause
       when "stop"
-        tm.pause
+        tm.cancel
       when "reset"
         tm.reset
       when "cancel"

@@ -27,7 +27,7 @@ end
 
 class NumericalMCPI
   $player_posi_10sec = [26, 7, 10, :normal]
-  $player_posi = [19, 5, 15, :normal]
+  $player_posi = [19, 5, 18, :normal]
 
   def initialize
     @mc = Minecraft.new
@@ -60,6 +60,7 @@ class NumericalMCPI
   end
 
   def initial_time_set( total_sec )
+#    reset_applause
     color = block_color( false )
     disp_sec( total_sec % 60, color )
     disp_min( total_sec / 60, color )
@@ -78,7 +79,7 @@ class NumericalMCPI
       player_position( $player_posi_10sec )
       disp_min( min, block_color )
       dot( block_color )
-      @mc.say "Prepare of applause!!!"
+      @mc.say "                Prepare of applause!!!"
     end
 
     disp_sec( sec, block_color )
@@ -88,9 +89,12 @@ class NumericalMCPI
     end
     
     if total_sec == 0
-      1.times do
-        applause
-      end
+      @mc.say "       Applause!!!  Applause!!!   Applause!!!"
+      @mc.say "     88888888888888888888888888888888888888"
+#      0.upto(10) do |i|
+#        puts "applause #{i}"
+#        draw_applause
+#      end
     end
     #    crap_crap if total_sec == 0 if total_sec == 0
   end
@@ -141,49 +145,51 @@ class NumericalMCPI
     @mc.set_block( 17,  7, 0, block_color )
   end
 
-  def applause
-    offset_x = 26
-    offset_y = 8
-    (7..0).each do |y|
-      (0..3).each do |x|
-        @mc.set_block( x + offset_x, y + offset_y, 0, Block::STONE_SLAB_DOUBLE)
-      end
-    end
-  end
-
-  def reset_applause
-    @mc.set_blocks(13,-4,0,38,16,0,Block::AIR)
-    @mc.set_blocks(13,-1,0,38,1,0,Block::GRASS)
-  end
-
-  def crap_crap()
-    30.times do
-      close_hand
-      sleep( 0.1 )
-      open_hand
-      sleep( 0.6 )
-    end
-  end
-
-  def open_hand
-    14.downto(4) do |y|
-      0.upto(5) do |x|
-        #        block = THand::Open_hand[14-y][x]
-        block = TNum::T[0][14-y][x]
-        @mc.set_block( x, y, 0, block )
-      end
-    end
-  end
-
-  def close_hand
-    14.downto(4) do |y|
-      0.upto(5) do |x|
-        #        block = THand::Close_hand[14-y][x]
-        block = TNum::T[0][14-y][x]
-        @mc.set_block( x, y, 0, block )
-      end
-    end
-  end
+#  def draw_applause
+#    offset_x = [*10..41].sample
+#    offset_y = [*-4..20].sample
+#    7.downto(0).each do |y|
+#      0.upto(3).each do |x|
+#        puts "#{x+offset_x}, #{y+offset_y}, #{TNum::Small8[7-y][x]}"
+#        @mc.set_block( x + offset_x, y + offset_y, 0, 
+#                       Block::STONE_SLAB_DOUBLE * TNum::Small8[7-y][x] )
+#      end
+#    end
+#  end
+#
+#  def reset_applause
+#    @mc.set_blocks( 10,-4,0,45,20,0,Block::AIR )
+#    @mc.set_blocks( 10,-1,0,45,1,0,Block::GRASS )
+#  end
+#
+#  def crap_crap()
+#    30.times do
+#      close_hand
+#      sleep( 0.1 )
+#      open_hand
+#      sleep( 0.6 )
+#    end
+#  end
+#
+#  def open_hand
+#    14.downto(4) do |y|
+#      0.upto(5) do |x|
+#        #        block = THand::Open_hand[14-y][x]
+#        block = TNum::T[0][14-y][x]
+#        @mc.set_block( x, y, 0, block )
+#      end
+#    end
+#  end
+#
+#  def close_hand
+#    14.downto(4) do |y|
+#      0.upto(5) do |x|
+#        #        block = THand::Close_hand[14-y][x]
+#        block = TNum::T[0][14-y][x]
+#        @mc.set_block( x, y, 0, block )
+#      end
+#    end
+#  end
 end
 
 #NumericalMCPI.new.ddigt(8, 28)
