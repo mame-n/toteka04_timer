@@ -60,7 +60,6 @@ class NumericalMCPI
   end
 
   def initial_time_set( total_sec )
-#    reset_applause
     color = block_color( false )
     disp_sec( total_sec % 60, color )
     disp_min( total_sec / 60, color )
@@ -91,12 +90,7 @@ class NumericalMCPI
     if total_sec == 0
       @mc.say "       Applause!!!  Applause!!!   Applause!!!"
       @mc.say "     88888888888888888888888888888888888888"
-#      0.upto(10) do |i|
-#        puts "applause #{i}"
-#        draw_applause
-#      end
     end
-    #    crap_crap if total_sec == 0 if total_sec == 0
   end
 
   def reset_world
@@ -123,7 +117,6 @@ class NumericalMCPI
   end
 
   def ddigt( number, digit, block_color )
-#    puts "**** #{block_color}"
     14.downto(4) do |y|
       0.upto(5) do |x|
         @mc.set_block( x+digit, y, 0, block_color * TNum::T[number][14-y][x] )
@@ -137,59 +130,12 @@ class NumericalMCPI
 
   def player_position( status )
     @mc.set_player_position( status[0], status[1], status[2] )
-    #    @mc.set_camera_mode( status[3] )
   end
 
   def dot(block_color)
     @mc.set_block( 17, 11, 0, block_color )
     @mc.set_block( 17,  7, 0, block_color )
   end
-
-#  def draw_applause
-#    offset_x = [*10..41].sample
-#    offset_y = [*-4..20].sample
-#    7.downto(0).each do |y|
-#      0.upto(3).each do |x|
-#        puts "#{x+offset_x}, #{y+offset_y}, #{TNum::Small8[7-y][x]}"
-#        @mc.set_block( x + offset_x, y + offset_y, 0, 
-#                       Block::STONE_SLAB_DOUBLE * TNum::Small8[7-y][x] )
-#      end
-#    end
-#  end
-#
-#  def reset_applause
-#    @mc.set_blocks( 10,-4,0,45,20,0,Block::AIR )
-#    @mc.set_blocks( 10,-1,0,45,1,0,Block::GRASS )
-#  end
-#
-#  def crap_crap()
-#    30.times do
-#      close_hand
-#      sleep( 0.1 )
-#      open_hand
-#      sleep( 0.6 )
-#    end
-#  end
-#
-#  def open_hand
-#    14.downto(4) do |y|
-#      0.upto(5) do |x|
-#        #        block = THand::Open_hand[14-y][x]
-#        block = TNum::T[0][14-y][x]
-#        @mc.set_block( x, y, 0, block )
-#      end
-#    end
-#  end
-#
-#  def close_hand
-#    14.downto(4) do |y|
-#      0.upto(5) do |x|
-#        #        block = THand::Close_hand[14-y][x]
-#        block = TNum::T[0][14-y][x]
-#        @mc.set_block( x, y, 0, block )
-#      end
-#    end
-#  end
 end
 
 #NumericalMCPI.new.ddigt(8, 28)

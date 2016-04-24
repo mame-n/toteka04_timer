@@ -1,6 +1,5 @@
 require 'rinda/tuplespace'
 require './mcpi_ruby'
-require 'pp'
 
 class Timer_ctrl
   TSURI = 'druby://localhost:9999'
@@ -17,28 +16,18 @@ class Timer_ctrl
   end
 
   def set_time( time_minutes )
-#    if time_minutes != 0
-      time_seconds = (time_minutes * 60).to_i  # Cut less than 1sec.
-      time_seconds = MaxTimerValue if time_seconds > MaxTimerValue
-#    else
-#      time_seconds = @set_time
-#    end
-
-#    @mcpi.say "Set time. #{time_seconds/60}:#{time_seconds%60}"
+    time_seconds = (time_minutes * 60).to_i  # Cut less than 1sec.
+    time_seconds = MaxTimerValue if time_seconds > MaxTimerValue
     @mcpi.initial_time_set( time_seconds )
     @set_time = time_seconds
   end
   
   def start( timer_value = @set_time )
-#    @mcpi.say "Start timer!! #{timer_value/60}:#{timer_value%60}"
-
     DRb.start_service
     ts = DRbObject.new_with_uri( TSURI )
 
     @timer_thread = timer_loop_start( ts, timer_value )
     @receive_thread = receive_timer_loop( ts )
-
-#    puts "RESULT #{Time.now - @real_time}"
   end
 
   def pause
@@ -48,7 +37,6 @@ class Timer_ctrl
   end
 
   def resume
-#    puts "Resume :"
     start( @pause_time )
   end
 
@@ -77,7 +65,6 @@ class Timer_ctrl
       @real_time = Time.now
 
       time_seconds.downto(0) do |time|
-#        puts "**S : #{time}"
         ts.write( ["timer", time] )
         sleep( 0.970 )
       end
@@ -87,7 +74,6 @@ class Timer_ctrl
   def receive_timer_loop( ts )
     Thread.new( ts ) do |ts|
       while (time = ts.take(["timer", nil])[1]) >= 0
-#        puts "**R : #{time}"
         @mcpi.display( time )
         @pause_time = time
         break if time == 0
@@ -102,8 +88,6 @@ class Timer_ctrl
     Thread.kill( @timer_thread ) if @timer_thread
     Thread.kill( @receive_thread ) if @receive_thread
     Thread.kill( @tuple_thread ) if @tuple_thread
-#    sleep(1)  # wait for stop timer loop thread
-#    pp Thread.list
   end
 
 end
